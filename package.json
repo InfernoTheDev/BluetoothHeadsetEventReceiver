@@ -1,0 +1,20 @@
+{
+  "name": "cordova-bluetooth-headset-event-receiver",
+  "version": "0.0.1",
+  "description": "Receive intent data from bluetoothheadset",
+  "cordova": {
+    "id": "cordova-bluetooth-headset-event-receiver",
+    "platforms": [
+      "android"
+    ]
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-bluetooth",
+    "bluetooth",
+    "receiver"
+  ],
+  "author": "parinya.k09@gmail.com",
+  "license": "ISC"
+}
