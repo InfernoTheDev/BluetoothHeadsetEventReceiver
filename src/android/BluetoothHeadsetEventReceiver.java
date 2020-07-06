@@ -1,4 +1,4 @@
-package cordova-bluetooth-headset-event-receiver;
+package cordova.bluetooth.headseteventreceiver;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
@@ -7,54 +7,50 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothAssignedNumbers;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothHeadset;
-import android.bluetooth.BluetoothProfile;
-import android.companion.BluetoothDeviceFilter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.media.AudioManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
+import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 
 /**
  * This class echoes a string called from JavaScript.
  */
 public class BluetoothHeadsetEventReceiver extends CordovaPlugin {
-
+    private final static String TAG = "HeadsetEventReceiver";
+    private final static String REGISTER_RECEIVER_SUCCESS = "REGISTER_RECEIVER_SUCCESS";
     CallbackContext mCallbackContext;
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+
         if (action.equals("registerReceiver")) {
             this.mCallbackContext = callbackContext;
+
             setBroadcastReceiver();
-            callbackContext.success(true);
+
+            PluginResult result = new PluginResult(PluginResult.Status.OK, REGISTER_RECEIVER_SUCCESS);
+            result.setKeepCallback(true);
+            callbackContext.sendPluginResult(result);
             return true;
         }
-        return false;
+        return true;
     }
 
     public void setBroadcastReceiver() {
-        if (this.broadcastReceiver != null){
-            this.unregisterReceiver(this.broadcastReceiver);
+        try {
+            //  Ensure we only have a single registered broadcast receiver
+            this.cordova.getActivity().unregisterReceiver(this.broadcastReceiver);
         }
+        catch (IllegalArgumentException e) {}
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addCategory(BluetoothHeadset.VENDOR_SPECIFIC_HEADSET_EVENT_COMPANY_ID_CATEGORY+"."+ BluetoothAssignedNumbers.PLANTRONICS);
@@ -62,7 +58,7 @@ public class BluetoothHeadsetEventReceiver extends CordovaPlugin {
         intentFilter.addAction(BluetoothHeadset.EXTRA_VENDOR_SPECIFIC_HEADSET_EVENT_CMD);
         intentFilter.addAction(BluetoothHeadset.EXTRA_VENDOR_SPECIFIC_HEADSET_EVENT_ARGS);
         intentFilter.addAction(BluetoothHeadset.ACTION_VENDOR_SPECIFIC_HEADSET_EVENT);
-        this.registerReceiver(broadcastReceiver, intentFilter);
+        this.cordova.getActivity().registerReceiver(broadcastReceiver, intentFilter);
     }
 
     public JSONObject getDevicesInfo(String deviceAddress){
@@ -112,7 +108,8 @@ public class BluetoothHeadsetEventReceiver extends CordovaPlugin {
                     // Insert Devices Info
                     if (key.equalsIgnoreCase(BluetoothDevice.EXTRA_DEVICE)) {
                         try {
-                            String addr = bundle.getString(key);
+                            String addr = bundle.get(key).toString();
+                            Log.d(TAG, "addr => " + addr);
                             result.put("deviceInfo", getDevicesInfo(addr));
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -122,17 +119,24 @@ public class BluetoothHeadsetEventReceiver extends CordovaPlugin {
                     // Insert Event
                     if (key.equalsIgnoreCase(BluetoothHeadset.EXTRA_VENDOR_SPECIFIC_HEADSET_EVENT_ARGS)) {
                         Object[] args = (Object[]) bundle.get(key);
+                        JSONArray jsonArray = new JSONArray();
                         Log.d(TAG, "ARGS => " + Arrays.asList(args));
+
+                        for (Object value : args) {
+                            jsonArray.put(value);
+                        }
+
                         try {
-                            result.put("event", args);
+                            result.put("event", jsonArray);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
                 }
             }
-
-            mCallbackContext.success(result);
+            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, result);
+            pluginResult.setKeepCallback(true);
+            mCallbackContext.sendPluginResult(pluginResult);
 
         }
 
