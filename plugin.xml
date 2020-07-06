@@ -1,2 +1,18 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="cordova-bluetooth-headset-event-receiver" version="0.0.1" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android"><name>BluetoothHeadsetEventReceiver</name><js-module name="BluetoothHeadsetEventReceiver" src="www/BluetoothHeadsetEventReceiver.js"><clobbers target="cordova.plugins.BluetoothHeadsetEventReceiver" /></js-module><platform name="android"><config-file parent="/*" target="res/xml/config.xml"><feature name="BluetoothHeadsetEventReceiver"><param name="android-package" value="cordova-bluetooth-headset-event-receiver.BluetoothHeadsetEventReceiver" /></feature></config-file><config-file parent="/*" target="AndroidManifest.xml"></config-file><source-file src="src/android/BluetoothHeadsetEventReceiver.java" target-dir="src/cordova-bluetooth-headset-event-receiver/BluetoothHeadsetEventReceiver" /></platform></plugin>
+<plugin id="cordova-bluetooth-headset-event-receiver" version="0.0.1" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>BluetoothHeadsetEventReceiver</name>
+    <js-module name="BluetoothHeadsetEventReceiver" src="www/BluetoothHeadsetEventReceiver.js">
+        <clobbers target="cordova.plugins.BluetoothHeadsetEventReceiver" />
+    </js-module>
+    <platform name="android">
+        <config-file parent="/*" target="res/xml/config.xml">
+            <feature name="BluetoothHeadsetEventReceiver">
+                <param name="android-package" value="cordova.bluetooth.headseteventreceiver.BluetoothHeadsetEventReceiver" />
+            </feature>
+        </config-file>
+        <config-file parent="/*" target="AndroidManifest.xml"></config-file>
+        <source-file 
+            src="src/android/BluetoothHeadsetEventReceiver.java" 
+            target-dir="src/cordova/bluetooth/headseteventreceiver" />
+    </platform>
+</plugin>
